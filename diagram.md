@@ -139,7 +139,7 @@ Task Queue
 │   Container     │    │   Worker        │    │   Container     │
 │                 │    │   Container     │    │                 │
 │ • API Server    │    │ • Task          │    │ • Database      │
-│ • Health Check  │    │   Processing    │    │ • Migrations    │
+│ • Health Check  │    │   Processing    │    │ • Auto Schema   │
 │ • Documentation │    │ • Agent         │    │ • Backup        │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          |                       |                       |

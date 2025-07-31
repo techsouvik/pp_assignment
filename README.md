@@ -62,7 +62,7 @@ An autonomous code review agent system that uses AI to analyze GitHub pull reque
 
 4. **Initialize the database**
    ```bash
-   docker-compose exec api alembic upgrade head
+   # Database tables will be created automatically on first startup
    ```
 
 The API will be available at `http://localhost:8000`
@@ -81,9 +81,9 @@ The API will be available at `http://localhost:8000`
    docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=password postgres:15-alpine
    ```
 
-3. **Run database migrations**
+3. **Database setup**
    ```bash
-   alembic upgrade head
+   # Database tables will be created automatically on first startup
    ```
 
 4. **Start the application**

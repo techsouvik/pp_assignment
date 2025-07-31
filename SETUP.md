@@ -84,8 +84,7 @@ pip install -r requirements.txt
 redis-server &
 postgres -D /usr/local/var/postgres &
 
-# Run migrations
-alembic upgrade head
+# Database tables will be created automatically
 
 # Start API server
 python run_dev.py &
