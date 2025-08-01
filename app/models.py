@@ -38,7 +38,7 @@ class AnalysisTask(Base):
     # Results and metadata
     results = Column(JSON, nullable=True)
     error_message = Column(Text, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    task_metadata = Column(JSON, nullable=True)
     
     # Progress tracking
     total_files = Column(Integer, default=0)

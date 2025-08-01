@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
+    image: postgres:latest
     container_name: pr_analyzer_postgres
     environment:
       POSTGRES_USER: postgres
@@ -22,7 +20,7 @@ services:
 
   # Redis for caching and Celery broker
   redis:
-    image: redis:7-alpine
+    image: redis:latest
     container_name: pr_analyzer_redis
     ports:
       - "6379:6379"
@@ -51,6 +49,10 @@ services:
       - API_PORT=8000
       - DEBUG=false
       - LOG_LEVEL=INFO
+      # AI API Keys - Set these via .env file or add your keys here
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
     volumes:
       - .:/app
     depends_on:
@@ -77,6 +79,10 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - LOG_LEVEL=INFO
+      # AI API Keys - Set these via .env file or add your keys here
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
     volumes:
       - .:/app
     depends_on:
