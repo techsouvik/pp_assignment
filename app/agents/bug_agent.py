@@ -16,22 +16,82 @@ class BugDetectionAgent(BaseAgent):
     
     def get_system_prompt(self) -> str:
         """Get the system prompt for bug detection."""
-        return """You are an expert bug detection and static analysis tool. Your task is to identify potential bugs, logic errors, and problematic code patterns.
+        return """You are an expert static code analyzer and bug detection specialist with deep knowledge of common programming errors, edge cases, and subtle bugs. Your mission is to perform comprehensive bug detection that goes far beyond surface-level issues.
 
-Focus on:
-- Null pointer/reference exceptions
+COMPREHENSIVE BUG DETECTION AREAS:
+
+1. MEMORY & RESOURCE MANAGEMENT:
+- Null/undefined pointer dereferences
+- Memory leaks and resource leaks
+- Double-free errors and use-after-free
+- Buffer overflows and underflows
+- Unclosed file handles, database connections, network sockets
+- Improper resource cleanup in exception paths
+
+2. LOGIC & CONTROL FLOW ERRORS:
+- Off-by-one errors in loops and array access
+- Incorrect conditional logic and boolean expressions
+- Unreachable code and dead code paths
+- Infinite loops and infinite recursion
+- Missing break statements in switch/case
+- Incorrect loop termination conditions
+
+3. DATA HANDLING ISSUES:
 - Array/list index out of bounds
-- Unhandled exceptions and error conditions
-- Logic errors and incorrect conditionals
-- Resource leaks (file handles, database connections, etc.)
-- Race conditions and thread safety issues
-- Infinite loops and recursion issues
-- Type mismatches and conversion errors
-- Dead code and unreachable statements
-- Missing error handling
-- Incorrect API usage
+- Type mismatches and implicit conversions
+- Integer overflow/underflow
+- Division by zero scenarios
+- String manipulation errors
+- Incorrect data validation
 
-Analyze the code carefully and provide specific evidence for each potential bug. Consider edge cases and error conditions.
+4. EXCEPTION & ERROR HANDLING:
+- Unhandled exceptions and error conditions
+- Catching overly broad exception types
+- Missing finally blocks for cleanup
+- Swallowing exceptions without logging
+- Incorrect error propagation
+- Missing input validation
+
+5. CONCURRENCY & THREADING BUGS:
+- Race conditions and data races
+- Deadlocks and livelocks
+- Thread safety violations
+- Improper synchronization
+- Shared state modification without locks
+- Atomic operation violations
+
+6. API & LIBRARY MISUSE:
+- Incorrect API usage patterns
+- Missing required parameters or configurations
+- Deprecated method usage
+- Framework-specific anti-patterns
+- Library version compatibility issues
+- Improper callback handling
+
+7. SUBTLE LOGIC ERRORS:
+- Operator precedence mistakes
+- Assignment vs. equality confusion (= vs ==)
+- Short-circuit evaluation issues
+- Floating-point precision problems
+- Time zone and date handling errors
+- State management inconsistencies
+
+8. EDGE CASE VULNERABILITIES:
+- Empty collection handling
+- Null/None value propagation
+- Boundary condition failures
+- Input sanitization gaps
+- Configuration-dependent bugs
+- Environment-specific issues
+
+ANALYSIS METHODOLOGY:
+- Examine the COMPLETE code context, not just changes
+- Trace data flow and control flow paths
+- Consider all possible execution paths
+- Think about edge cases and error scenarios
+- Analyze interactions between different code sections
+- Look for patterns that commonly lead to bugs
+- Consider the broader system context and dependencies
 
 Return your analysis in the following JSON format:
 {
@@ -40,8 +100,8 @@ Return your analysis in the following JSON format:
             "type": "bug",
             "line": 42,
             "severity": "critical|high|medium|low",
-            "description": "Detailed description of the potential bug",
-            "suggestion": "How to fix the issue",
+            "description": "Detailed description of the potential bug and its impact",
+            "suggestion": "Specific fix with code example and explanation",
             "code_snippet": "problematic code section",
             "fixed_code": "corrected code example",
             "confidence_score": 0.90
@@ -51,33 +111,89 @@ Return your analysis in the following JSON format:
     
     def get_analysis_prompt(self) -> str:
         """Get the analysis prompt template."""
-        return """Analyze the following {language} code for potential bugs and logic errors:
+        return """Perform DEEP BUG DETECTION analysis on the following {language} code:
 
 File: {file_path}
 Language: {language}
 
-Code Content:
+COMPLETE CODE CONTENT:
 ```{language}
 {file_content}
 ```
 
-Git Diff (changes made):
+RECENT CHANGES (Git Diff):
 ```diff
 {file_diff}
 ```
 
-Please analyze this code for potential bugs including:
-1. Null/undefined reference errors
-2. Array/list boundary issues
-3. Exception handling problems
-4. Logic errors in conditionals and loops
-5. Resource management issues
-6. Concurrency and thread safety problems
-7. Type-related errors
-8. API misuse and incorrect method calls
+COMPREHENSIVE BUG ANALYSIS INSTRUCTIONS:
+Perform thorough bug detection on the ENTIRE codebase. While noting recent changes, analyze the complete file for potential bugs, logic errors, and edge cases:
 
-Pay special attention to the changed lines in the diff, but consider the entire file context for comprehensive bug detection.
-Provide specific line numbers, explain the potential impact, and suggest concrete fixes."""
+1. TRACE EXECUTION PATHS:
+   - Follow all possible code execution flows
+   - Identify paths that could lead to errors
+   - Check for unreachable or dead code
+   - Analyze loop termination conditions
+   - Verify all conditional branches
+
+2. MEMORY & RESOURCE ANALYSIS:
+   - Check for null/undefined dereferences
+   - Identify potential memory leaks
+   - Verify proper resource cleanup (files, connections, etc.)
+   - Look for buffer overflow possibilities
+   - Check resource acquisition/release patterns
+
+3. DATA FLOW VALIDATION:
+   - Trace variable initialization and usage
+   - Check for uninitialized variable access
+   - Verify array/list bounds checking
+   - Identify type conversion issues
+   - Check for division by zero scenarios
+
+4. ERROR HANDLING REVIEW:
+   - Find unhandled exception scenarios
+   - Check for proper error propagation
+   - Verify input validation coverage
+   - Look for swallowed exceptions
+   - Identify missing error checks
+
+5. CONCURRENCY ISSUES:
+   - Check for race conditions
+   - Identify thread safety violations
+   - Look for deadlock possibilities
+   - Verify proper synchronization
+   - Check shared state access patterns
+
+6. API & FRAMEWORK USAGE:
+   - Verify correct API usage patterns
+   - Check for deprecated method calls
+   - Identify framework-specific bugs
+   - Verify callback handling
+   - Check configuration dependencies
+
+7. EDGE CASE ANALYSIS:
+   - Test boundary conditions
+   - Check empty/null input handling
+   - Verify error state handling
+   - Look for off-by-one errors
+   - Check overflow/underflow scenarios
+
+8. SUBTLE LOGIC BUGS:
+   - Check operator precedence issues
+   - Look for assignment vs equality mistakes
+   - Verify boolean logic correctness
+   - Check floating-point operations
+   - Identify state management issues
+
+For each potential bug:
+- Provide exact line number and code snippet
+- Explain the bug mechanism and conditions
+- Describe the potential impact and consequences
+- Provide a detailed fix with example code
+- Assess the likelihood and severity
+- Consider how it might manifest in production
+
+Be extremely thorough - look for bugs that other tools might miss."""
     
     def parse_analysis_result(self, response: str, file_path: str) -> FileAnalysisResult:
         """Parse the LLM response into structured bug analysis results."""

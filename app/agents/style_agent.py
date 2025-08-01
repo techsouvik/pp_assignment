@@ -16,19 +16,59 @@ class StyleAnalysisAgent(BaseAgent):
     
     def get_system_prompt(self) -> str:
         """Get the system prompt for style analysis."""
-        return """You are an expert code style and formatting analyzer. Your task is to identify style issues, formatting problems, and naming convention violations in code.
+        return """You are an expert code style and formatting analyzer with deep knowledge of coding standards and best practices. Your task is to perform comprehensive style analysis, going beyond basic formatting to identify maintainability and readability issues.
 
-Focus on:
-- Line length violations
-- Indentation inconsistencies  
-- Naming convention issues (camelCase, snake_case, PascalCase)
-- Missing or excessive whitespace
-- Comment style and placement
-- Import organization
-- Code organization and structure
-- Language-specific style guide violations (PEP8 for Python, etc.)
+COMPREHENSIVE ANALYSIS AREAS:
 
-Provide specific, actionable suggestions for each issue found. Be precise about line numbers and include code snippets where helpful.
+1. FORMATTING & STRUCTURE:
+- Line length violations and proper line breaking
+- Indentation inconsistencies and alignment issues
+- Whitespace problems (trailing, excessive, missing)
+- Bracket and parentheses placement
+- Code block organization and logical grouping
+
+2. NAMING CONVENTIONS:
+- Variable, function, class, and constant naming
+- Language-specific conventions (PEP8, camelCase, etc.)
+- Meaningful and descriptive names
+- Consistency across the codebase
+- Abbreviation and acronym usage
+
+3. CODE ORGANIZATION:
+- Import statement organization and grouping
+- Function and class ordering
+- Code duplication and repetition
+- Logical flow and structure
+- Separation of concerns
+
+4. DOCUMENTATION & COMMENTS:
+- Missing or inadequate docstrings
+- Comment placement and style
+- Inline comment quality
+- Documentation consistency
+- Over-commenting or under-commenting
+
+5. LANGUAGE-SPECIFIC STANDARDS:
+- PEP8 compliance for Python
+- JavaScript/TypeScript style guides
+- Java coding conventions
+- C++ best practices
+- Framework-specific patterns
+
+6. MAINTAINABILITY ISSUES:
+- Complex expressions that should be simplified
+- Magic numbers and hardcoded values
+- Long parameter lists
+- Deeply nested code structures
+- Code that's hard to read or understand
+
+ANALYSIS APPROACH:
+- Examine the ENTIRE file content, not just diffs
+- Look for patterns and consistency issues
+- Consider the broader context and codebase conventions
+- Provide specific, actionable improvements
+- Focus on issues that impact code maintainability and readability
+- Be thorough but practical in your recommendations
 
 Return your analysis in the following JSON format:
 {
@@ -36,11 +76,11 @@ Return your analysis in the following JSON format:
         {
             "type": "style",
             "line": 15,
-            "severity": "medium|low",
-            "description": "Detailed description of the style issue",
-            "suggestion": "Specific fix suggestion",
-            "code_snippet": "problematic code",
-            "fixed_code": "corrected code (optional)",
+            "severity": "high|medium|low",
+            "description": "Detailed description of the style issue and its impact",
+            "suggestion": "Specific fix suggestion with reasoning",
+            "code_snippet": "problematic code section",
+            "fixed_code": "corrected code example",
             "confidence_score": 0.85
         }
     ]
@@ -48,32 +88,73 @@ Return your analysis in the following JSON format:
     
     def get_analysis_prompt(self) -> str:
         """Get the analysis prompt template."""
-        return """Analyze the following {language} code for style and formatting issues:
+        return """Perform a COMPREHENSIVE style analysis of the following {language} code:
 
 File: {file_path}
 Language: {language}
 
-Code Content:
+FULL CODE CONTENT:
 ```{language}
 {file_content}
 ```
 
-Git Diff (changes made):
+RECENT CHANGES (Git Diff):
 ```diff
 {file_diff}
 ```
 
-Please analyze this code for style issues including:
-1. Line length violations
-2. Indentation problems
-3. Naming convention issues
-4. Whitespace issues
-5. Comment style problems
-6. Import organization
-7. Language-specific style guide violations
+ANALYSIS INSTRUCTIONS:
+Analyze the ENTIRE file thoroughly, not just the diff. While paying attention to recent changes, examine the complete codebase for:
 
-Focus especially on the changed lines in the diff, but consider the entire file context.
-Provide specific line numbers and actionable suggestions."""
+1. FORMATTING ISSUES:
+   - Line length violations (>80-120 chars depending on language)
+   - Inconsistent indentation or mixed tabs/spaces
+   - Poor bracket/parentheses alignment
+   - Excessive or missing whitespace
+   - Improper line breaks in long expressions
+
+2. NAMING CONVENTION VIOLATIONS:
+   - Non-descriptive variable names (x, temp, data, etc.)
+   - Inconsistent naming patterns within the file
+   - Language-specific convention violations
+   - Misleading or confusing names
+   - Names that don't reflect their purpose
+
+3. CODE ORGANIZATION PROBLEMS:
+   - Poorly organized imports (not grouped/sorted)
+   - Functions/classes in illogical order
+   - Mixed levels of abstraction
+   - Code duplication within the file
+   - Poor separation of concerns
+
+4. DOCUMENTATION DEFICIENCIES:
+   - Missing docstrings for classes/functions
+   - Inadequate or unclear comments
+   - Inconsistent documentation style
+   - Missing type hints (where applicable)
+   - Outdated or misleading comments
+
+5. MAINTAINABILITY CONCERNS:
+   - Magic numbers without explanation
+   - Complex expressions that need simplification
+   - Long parameter lists
+   - Deeply nested code (>3-4 levels)
+   - Hard-to-understand logic flows
+
+6. LANGUAGE-SPECIFIC ISSUES:
+   - PEP8 violations (Python)
+   - ESLint rule violations (JavaScript/TypeScript)
+   - Google/Oracle style guide violations (Java)
+   - Framework-specific anti-patterns
+
+For each issue found:
+- Provide the exact line number
+- Include the problematic code snippet
+- Explain WHY it's a problem
+- Suggest a specific fix with example code
+- Assess the impact on code maintainability
+
+Be thorough and examine every aspect of the code quality, not just surface-level formatting."""
     
     def parse_analysis_result(self, response: str, file_path: str) -> FileAnalysisResult:
         """Parse the LLM response into structured style analysis results."""
